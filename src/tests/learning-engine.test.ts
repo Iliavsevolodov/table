@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createFactFamily, generateMathFacts } from "@/lib/math/facts";
 import { EMPTY_MASTERY, scheduleNextReview, selectNextQuestion, updateMastery } from "@/lib/learning-engine";
+import { createDiagnosticState, diagnosticScore, selectDiagnosticFact, updateDiagnosticState } from "@/lib/learning-engine/diagnostic";
+import { hintForFact } from "@/lib/learning-engine/hints";
 
 describe("math fact families", () => {
   it("links both multiplication directions and inverse division", () => {
@@ -68,5 +70,29 @@ describe("question selection", () => {
     const due = { ...EMPTY_MASTERY(fact.id), attemptsCount:3, masteryScore:.7, nextReviewAt:"2020-01-01T00:00:00.000Z" };
     const selected = selectNextQuestion([{fact,mastery:due}],{now:new Date("2026-01-01T00:00:00Z"),random:()=>0});
     expect(selected?.bucket).toBe("due");
+  });
+});
+
+describe("adaptive diagnostic", () => {
+  it("moves estimated ability upward after a fast correct answer", () => {
+    const state = createDiagnosticState();
+    const fact = selectDiagnosticFact(state);
+    const next = updateDiagnosticState(state, fact, { correct:true, responseTimeMs:1800 });
+    expect(next.ability).toBeGreaterThan(state.ability);
+    expect(diagnosticScore(next)).toBeGreaterThan(0);
+  });
+
+  it("does not immediately repeat an already asked fact", () => {
+    const state = createDiagnosticState();
+    const first = selectDiagnosticFact(state);
+    const next = updateDiagnosticState(state, first, { correct:true, responseTimeMs:2500 });
+    expect(selectDiagnosticFact(next).id).not.toBe(first.id);
+  });
+});
+
+describe("hints", () => {
+  it("connects division back to multiplication", () => {
+    const fact = generateMathFacts(7,7).find((item)=>item.operation==="division")!;
+    expect(hintForFact(fact,2)).toContain("× ? =");
   });
 });
