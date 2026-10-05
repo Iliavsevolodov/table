@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #15213b;
+  --cream: #fff9ec;
+  --sun: #ffd84d;
+  --violet: #7357ff;
+  --aqua: #43d6c8;
+  --coral: #ff766f;
+  --leaf: #6ccf72;
+  --sky: #82d9ff;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--cream); }
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family: ui-rounded, "Nunito", "Avenir Next", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,216,77,.45), transparent 30rem),
+    radial-gradient(circle at 90% 10%, rgba(130,217,255,.4), transparent 34rem),
+    linear-gradient(180deg, #fffdf7 0%, #f7fbff 100%);
+}
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.game-shadow { box-shadow: 0 12px 0 rgba(21,33,59,.10), 0 18px 40px rgba(21,33,59,.13); }
+.soft-panel { backdrop-filter: blur(18px); background: rgba(255,255,255,.78); border: 1px solid rgba(255,255,255,.9); }
+.text-balance { text-wrap: balance; }
+
+@keyframes floaty { 0%,100%{ transform: translateY(0) rotate(-1deg)} 50%{ transform: translateY(-10px) rotate(1deg)} }
+@keyframes cloud { from{ transform: translateX(-8%)} to{ transform: translateX(8%)} }
+.floaty { animation: floaty 4.8s ease-in-out infinite; }
+.cloudy { animation: cloud 9s ease-in-out infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
